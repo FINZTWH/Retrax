@@ -1,0 +1,394 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Loyora - Shop Products</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{% static 'css/shop_products.css' %}">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <!-- Logo -->
+        <div class="sidebar-top">
+            <div class="sidebar-logo">
+                <div class="logo-icon">L</div>
+
+                <div>
+                    <div class="logo-name">loyora</div>
+                    <div class="logo-tagline">Shop with meaning</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+
+                <div class="nav-heading">Workspace</div>
+
+                <a href="{% url 'overview' %}">
+                    <span class="nav-icon">⌂</span>
+                    <span>Overview</span>
+                </a>
+
+                <a href="{% url 'shop_products' %}" class="active">
+                    <span class="nav-icon">▦</span>
+                    <span>Shop products</span>
+                </a>
+
+                <a href="{% url 'my_orders' %}">
+                    <span class="nav-icon">▤</span>
+                    <span>My orders</span>
+                </a>
+
+                <a href="{% url 'loyalty_rewards' %}">
+                    <span class="nav-icon">✧</span>
+                    <span>Loyalty & rewards</span>
+                </a>
+
+                <a href="{% url 'my_preferences' %}">
+                    <span class="nav-icon">⚙</span>
+                    <span>My preferences</span>
+                </a>
+
+                <a href="{% url 'reviews_feedback' %}">
+                    <span class="nav-icon">☆</span>
+                    <span>Reviews & feedback</span>
+                </a>
+
+                <div class="nav-heading management-heading">
+                    Management
+                </div>
+
+                <a href="{% url 'admin_dashboard' %}">
+                    <span class="nav-icon">▣</span>
+                    <span>Admin dashboard</span>
+                </a>
+
+                <a href="{% url 'product_management' %}">
+                    <span class="nav-icon">▧</span>
+                    <span>Product management</span>
+                </a>
+
+                <a href="{% url 'customers' %}">
+                    <span class="nav-icon">♙</span>
+                    <span>Customers</span>
+                </a>
+
+                <a href="{% url 'retention_analytics' %}">
+                    <span class="nav-icon">▥</span>
+                    <span>Retention analytics</span>
+                </a>
+
+            </nav>
+        </div>
+
+        <!-- Help Card and Profile -->
+        <div class="sidebar-bottom">
+
+            <div class="help-card">
+                <h4>Need a little help?</h4>
+
+                <p>
+                    Explore your rewards and discover
+                    something you'll love.
+                </p>
+
+                <a href="{% url 'loyalty_rewards' %}">
+                    View rewards →
+                </a>
+            </div>
+
+            <!-- User Profile -->
+            <div class="user-profile">
+
+                <div class="user-avatar">
+                    {{ user.initials|default:"EA" }}
+                </div>
+
+                <div class="user-details">
+                    <h4>
+                        {{ user.get_full_name|default:"Emmanuel Adah" }}
+                    </h4>
+
+                    <p>
+                        Member · {{ user.tier|default:"Green" }} tier
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP HEADER -->
+        <header class="top-header">
+
+            <div class="breadcrumb">
+                <span>Workspace</span>
+                <span>/</span>
+                <span>Shop products</span>
+            </div>
+
+            <div class="header-actions">
+
+                <!-- Search -->
+                <form method="get" class="search-form">
+
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ request.GET.q }}"
+                        placeholder="Search products..."
+                    >
+
+                    {% if current_category != 'all' %}
+                        <input
+                            type="hidden"
+                            name="category"
+                            value="{{ current_category }}"
+                        >
+                    {% endif %}
+
+                    {% if request.GET.sort %}
+                        <input
+                            type="hidden"
+                            name="sort"
+                            value="{{ request.GET.sort }}"
+                        >
+                    {% endif %}
+
+                    <button type="submit">Search</button>
+
+                </form>
+
+                <a href="{% url 'my_orders' %}" class="cart-count">
+                    🛒 {{ cart_count }} in cart
+                </a>
+
+                <div class="header-avatar">
+                    {{ user.initials|default:"EA" }}
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="page-content">
+
+            <!-- TITLE SECTION -->
+            <div class="title-section">
+
+                <div class="title-content">
+
+                    <div class="eyebrow">
+                        THE LOYORA EDIT
+                    </div>
+
+                    <h1>Find your next favourite</h1>
+
+                    <p>
+                        Explore thoughtful picks, customer favourites,
+                        and products selected around your interests.
+                    </p>
+
+                </div>
+
+                <a
+                    href="{% url 'my_preferences' %}"
+                    class="preferences-btn"
+                >
+                    My preferences →
+                </a>
+
+            </div>
+
+
+            <!-- CATEGORY FILTERS -->
+            <div class="category-filters">
+
+                <a
+                    href="?category=all{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                    class="{% if current_category == 'all' %}active{% endif %}"
+                >
+                    All products
+                </a>
+
+                {% for cat in categories %}
+
+                    <a
+                        href="?category={{ cat.slug }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                        class="{% if current_category == cat.slug %}active{% endif %}"
+                    >
+                        {{ cat.name }}
+                    </a>
+
+                {% endfor %}
+
+                <a
+                    href="?sort=recommended{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if current_category != 'all' %}&category={{ current_category }}{% endif %}"
+                    class="{% if request.GET.sort == 'recommended' %}active{% endif %}"
+                >
+                    Recommended
+                </a>
+
+            </div>
+
+
+            <!-- DJANGO MESSAGES -->
+            {% if messages %}
+
+                <div class="messages">
+
+                    {% for message in messages %}
+
+                        <p>{{ message }}</p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- PRODUCTS GRID -->
+            <div class="products-grid">
+
+                {% for product in products %}
+
+                    <div class="product-card">
+
+                        <!-- PRODUCT IMAGE AREA -->
+                        <div class="product-image">
+
+                            {% if product.badge %}
+
+                                <span class="product-badge">
+                                    {{ product.badge }}
+                                </span>
+
+                            {% endif %}
+
+                            <!-- Favorite Button -->
+                            <form
+                                method="post"
+                                action="{% url 'toggle_favorite' product.id %}"
+                                class="favorite-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="favorite-btn"
+                                    title="Toggle favorite"
+                                >
+                                    {% if product.id in favorite_ids %}
+                                        ♥
+                                    {% else %}
+                                        ♡
+                                    {% endif %}
+                                </button>
+
+                            </form>
+
+                            <!-- Product Emoji -->
+                            <div class="product-emoji">
+                                {{ product.emoji|default:"🛍️" }}
+                            </div>
+
+                        </div>
+
+
+                        <!-- PRODUCT DETAILS -->
+                        <div class="product-info">
+
+                            <div class="product-category">
+                                {{ product.category }}
+                            </div>
+
+                            <h3>{{ product.name }}</h3>
+
+                            <!-- Price and Points -->
+                            <div class="product-price">
+
+                                <span class="price">
+                                    ${{ product.price }}
+                                </span>
+
+                                <span class="points">
+                                    +{{ product.points }} pts
+                                </span>
+
+                            </div>
+
+                            <!-- Rating -->
+                            <div class="product-rating">
+
+                                <span>★</span>
+
+                                {{ product.rating }}
+                                · Customer favourite
+
+                            </div>
+
+                            <!-- Add To Cart -->
+                            <form
+                                method="post"
+                                action="{% url 'add_to_cart' product.id %}"
+                                class="add-cart-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <button type="submit">
+                                    Add to cart
+                                    <span>+</span>
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="empty-products">
+
+                        <div class="empty-icon">🛍️</div>
+
+                        <h3>No products found</h3>
+
+                        <p>
+                            We couldn't find any products matching
+                            your search. Try another category or keyword.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
