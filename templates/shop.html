@@ -10,7 +10,7 @@
     <title>Retrax - Shop Products</title>
 
     <!-- External CSS -->
-    <link rel="stylesheet" href="{% static 'css/shop_products.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shop_products.css' %}?v=shop-2">
 </head>
 
 <body>
@@ -39,7 +39,7 @@
                     <span>Overview</span>
                 </a>
 
-                <a href="{% url 'shop_products' %}" class="active">
+                <a href="{% url 'shop_products' %}" class="active" aria-current="page">
                     <span class="nav-icon">▦</span>
                     <span>Shop products</span>
                 </a>
@@ -109,21 +109,31 @@
 
             <!-- User Profile -->
             <div class="user-profile">
-
                 <div class="user-avatar">
-                    {{ user.initials|default:"R/T" }}
+                    {% if user.is_authenticated %}
+                        {{ user.first_name.0|default:user.username.0|upper }}{{ user.last_name.0|upper }}
+                    {% else %}
+                        R/T
+                    {% endif %}
                 </div>
-
                 <div class="user-details">
                     <h4>
-                        <!-- {{ user.get_full_name|default:"Emmanuel Adah" }} -->
+                        {% if user.is_authenticated %}
+                            {{ user.get_full_name|default:user.username }}
+                        {% else %}
+                            Guest shopper
+                        {% endif %}
                     </h4>
-
                     <p>
-                        <!-- Member · {{ user.tier|default:"Green" }} tier -->
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}Administrator{% else %}Retrax member{% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path|urlencode }}">Sign in</a>
+                            ·
+                            <a href="{% url 'register' %}">Register</a>
+                        {% endif %}
                     </p>
                 </div>
-
             </div>
 
         </div>
@@ -153,6 +163,7 @@
                         name="q"
                         value="{{ request.GET.q }}"
                         placeholder="Search products..."
+                        aria-label="Search products"
                     >
 
                     {% if current_category != 'all' %}
@@ -179,9 +190,18 @@
                     🛒 {{ cart_count }} in cart
                 </a>
 
-                <div class="header-avatar">
-                    {{ user.initials|default:"R/T" }}
+                {% if user.is_authenticated %}
+                <div class="header-avatar" title="{{ user.get_full_name|default:user.username }}">
+                    {{ user.first_name.0|default:user.username.0|upper }}
                 </div>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="preferences-btn">Sign out</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="preferences-btn">Sign in</a>
+                <a href="{% url 'register' %}" class="preferences-btn">Register</a>
+                {% endif %}
 
             </div>
 
@@ -253,7 +273,7 @@
             <!-- DJANGO MESSAGES -->
             {% if messages %}
 
-                <div class="messages">
+                <div class="messages" role="status" aria-live="polite">
 
                     {% for message in messages %}
 
@@ -292,11 +312,13 @@
                             >
 
                                 {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
                                 <button
                                     type="submit"
                                     class="favorite-btn"
-                                    title="Toggle favorite"
+                                    aria-label="{% if product.id in favorite_ids %}Remove {{ product.name }} from favorites{% else %}Add {{ product.name }} to favorites{% endif %}"
+                                    title="{% if product.id in favorite_ids %}Remove from favorites{% else %}Add to favorites{% endif %}"
                                 >
                                     {% if product.id in favorite_ids %}
                                         ♥
@@ -355,10 +377,11 @@
                             >
 
                                 {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
-                                <button type="submit">
-                                    Add to cart
-                                    <span>+</span>
+                                <button type="submit"{% if product.stock == 0 %} disabled{% endif %}>
+                                    {% if product.stock == 0 %}Out of stock{% else %}Add to cart{% endif %}
+                                    {% if product.stock != 0 %}<span>+</span>{% endif %}
                                 </button>
 
                             </form>
