@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrax | Product Management</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/product.css' %}?v=management-2">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <a href="{% url 'shop_products' %}" class="brand" aria-label="Retrax shop">
+            <span class="brand-mark">R</span>
+            <span class="brand-copy">
+                <strong>Retrax</strong>
+                <small>SHOP WITH MEANING</small>
+            </span>
+        </a>
+
+        <div class="nav-section">WORKSPACE</div>
+
+        <nav class="navigation">
+            <a href="{% url 'overview' %}" class="nav-link">
+                <span class="nav-icon">⌂</span> Overview
+            </a>
+
+            <a href="{% url 'shop_products' %}" class="nav-link">
+                <span class="nav-icon">▦</span> Shop products
+            </a>
+
+            <a href="{% url 'my_orders' %}" class="nav-link">
+                <span class="nav-icon">▤</span> My orders
+            </a>
+
+            <a href="{% url 'loyalty_rewards' %}" class="nav-link">
+                <span class="nav-icon">✧</span> Loyalty &amp; rewards
+            </a>
+
+            <a href="{% url 'my_preferences' %}" class="nav-link">
+                <span class="nav-icon">♡</span> My preferences
+            </a>
+
+            <a href="{% url 'reviews_feedback' %}" class="nav-link">
+                <span class="nav-icon">☆</span> Reviews &amp; feedback
+            </a>
+        </nav>
+
+        <div class="nav-section management-label">
+            MANAGEMENT
+        </div>
+
+        <nav class="navigation">
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                <span class="nav-icon">▥</span> Admin dashboard
+            </a>
+
+            <a href="{% url 'product_management' %}" class="nav-link active" aria-current="page">
+                <span class="nav-icon">▧</span> Product management
+            </a>
+
+            <a href="{% url 'customers' %}" class="nav-link">
+                <span class="nav-icon">♙</span> Customers
+            </a>
+
+            <a href="{% url 'retention_analytics' %}" class="nav-link">
+                <span class="nav-icon">⌁</span> Retention analytics
+            </a>
+        </nav>
+
+        <!-- HELP CARD -->
+        <div class="help-card">
+            <h3>Need a little help?</h3>
+
+            <p>
+                Explore your rewards and discover
+                something you'll love.
+            </p>
+
+            <a href="{% url 'loyalty_rewards' %}">View rewards ↗</a>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="profile">
+            <div class="avatar">R/T</div>
+
+            <!-- <div>
+                <strong>Emmanuel Adah</strong>
+                <span>Member · Green tier</span>
+            </div> -->
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-area">
+
+        <!-- TOP NAVBAR -->
+        <header class="topbar">
+
+            <button class="menu-toggle" id="menuToggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+                <span>Workspace</span>
+                <i>/</i>
+                <strong>Product management</strong>
+            </div>
+
+            <form class="global-search" method="get" action="{% url 'product_management' %}">
+                <input
+                    type="search"
+                    name="q"
+                    placeholder="Search products, orders..."
+                    value="{{ request.GET.q|default:'' }}"
+                    aria-label="Search products"
+                >
+            </form>
+
+            <button class="icon-button" type="button" aria-label="Notifications">♧</button>
+
+            <div class="top-avatar">R/T</div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="page-content">
+
+            <div class="page-heading">
+
+                <div>
+                    <p class="eyebrow">CATALOGUE</p>
+
+                    <h1>Product management</h1>
+
+                    <p class="subtitle">
+                        Manage product details, pricing, stock,
+                        and merchandising.
+                    </p>
+                </div>
+
+                <a href="{% url 'add_product' %}" class="add-button">
+                    <span>＋</span> Add product
+                </a>
+
+            </div>
+
+
+            <!-- PRODUCT CATALOGUE -->
+            <section class="catalogue-card">
+
+                <div class="catalogue-heading">
+                    <div>
+                        <h2>All products</h2>
+
+                        <p>
+                            <span id="productCount">{{ products|length }}</span>
+                            products in your catalogue.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- FILTERS -->
+                <div class="filters">
+
+                    <input
+                        type="search"
+                        id="productSearch"
+                        placeholder="Search products..."
+                        value="{{ initial_search }}"
+                    >
+
+                    <select id="categoryFilter">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.slug }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select id="stockFilter">
+                        <option value="">All stock statuses</option>
+                        <option value="in stock">In stock</option>
+                        <option value="low stock">Low stock</option>
+                        <option value="out of stock">Out of stock</option>
+                    </select>
+
+                </div>
+
+
+                <!-- PRODUCT TABLE -->
+                <div class="table-wrap">
+
+                    <table class="product-table">
+
+                        <thead>
+                            <tr>
+                                <th>PRODUCT</th>
+                                <th>CATEGORY</th>
+                                <th>PRICE</th>
+                                <th>POINTS</th>
+                                <th>STOCK</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="productRows">
+                            {% for product in products %}
+                            <tr data-name="{{ product.name|lower }}" data-category="{{ product.category.slug }}" data-stock="{% if product.stock == 0 %}out of stock{% elif product.stock < 10 %}low stock{% else %}in stock{% endif %}">
+                                <td class="product-name"><span class="product-emoji">{{ product.emoji }}</span><strong>{{ product.name }}</strong></td>
+                                <td>{{ product.category.name }}</td><td>${{ product.price }}</td><td>{{ product.points }}</td><td>{{ product.stock }} units</td>
+                                <td><span class="status-pill {% if product.is_active %}active{% else %}inactive{% endif %}">{% if product.is_active %}{% if product.stock == 0 %}Out of stock{% elif product.stock < 10 %}Low stock{% else %}Active{% endif %}{% else %}Inactive{% endif %}</span></td>
+                                <td><a href="{% url 'edit_product' product_id=product.id %}" class="edit-link">Edit</a></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="empty-state">No database products yet. <a href="{% url 'add_product' %}">Add the first product.</a></td></tr>
+                            {% endfor %}
+
+                            <tr id="noMatches" hidden>
+                                <td colspan="7" class="empty-state">
+                                    No products match your search.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Close navigation" tabindex="-1"></button>
+
+<!-- JAVASCRIPT -->
+<script>
+
+const searchInput = document.getElementById("productSearch");
+const categoryFilter = document.getElementById("categoryFilter");
+const stockFilter = document.getElementById("stockFilter");
+
+const rows = [
+    ...document.querySelectorAll("#productRows tr[data-name]")
+];
+
+const noMatches = document.getElementById("noMatches");
+const productCount = document.getElementById("productCount");
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+
+function filterProducts() {
+
+    const query = searchInput.value.toLowerCase().trim();
+    const category = categoryFilter.value.toLowerCase();
+    const stock = stockFilter.value.toLowerCase();
+
+    let visible = 0;
+
+    rows.forEach(row => {
+
+        const matches =
+            row.dataset.name.includes(query) &&
+            (!category || row.dataset.category === category) &&
+            (!stock || row.dataset.stock === stock);
+
+        row.hidden = !matches;
+
+        if (matches) {
+            visible++;
+        }
+
+    });
+
+    noMatches.hidden = visible !== 0;
+    productCount.textContent = visible;
+
+}
+
+
+searchInput.addEventListener("input", filterProducts);
+filterProducts();
+
+categoryFilter.addEventListener("change", filterProducts);
+
+stockFilter.addEventListener("change", filterProducts);
+
+
+function setMenuOpen(open) {
+    sidebar.classList.toggle("sidebar-open", open);
+    sidebarOverlay.classList.toggle("is-visible", open);
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    sidebarOverlay.tabIndex = open ? 0 : -1;
+}
+
+menuToggle.addEventListener("click", () => {
+    setMenuOpen(!sidebar.classList.contains("sidebar-open"));
+});
+
+sidebarOverlay.addEventListener("click", () => setMenuOpen(false));
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        setMenuOpen(false);
+    }
+});
+
+window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) {
+        setMenuOpen(false);
+    }
+});
+
+</script>
+
+</body>
+</html>

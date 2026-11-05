@@ -21,21 +21,25 @@ Including another URLconf
 #     path('admin/', admin.site.urls),
 # ]
 
-from django.urls import path
+from django.urls import include, path
 from . import views
 
 urlpatterns = [
+    path("", include("account.urls")),
     path("", views.shop_products, name="shop_products"),
     path("shop/", views.shop_products, name="shop_products"),
-    path("overview/", views.simple_page("Overview"), name="overview"),
-    path("orders/", views.simple_page("My orders"), name="my_orders"),
-    path("rewards/", views.simple_page("Loyalty & rewards"), name="loyalty_rewards"),
-    path("preferences/", views.simple_page("My preferences"), name="my_preferences"),
-    path("reviews/", views.simple_page("Reviews & feedback"), name="reviews_feedback"),
-    path("admin/", views.simple_page("Admin dashboard"), name="admin_dashboard"),
-    path("products/manage/", views.simple_page("Product management"), name="product_management"),
-    path("customers/", views.simple_page("Customers"), name="customers"),
-    path("analytics/", views.simple_page("Retention analytics"), name="retention_analytics"),
+    path("overview/", views.overview, name="overview"),
+    path("orders/", views.orders, name="my_orders"),
+    path("rewards/", views.rewards, name="loyalty_rewards"),
+    path("preferences/", views.preferences, name="my_preferences"),
+    path("reviews/", views.reviews_feedback, name="reviews_feedback"),
+    path("admin/", views.admin_dashboard, name="admin_dashboard"),
+    path("products/manage/", views.product_management, name="product_management"),
+    path("products/add/", views.add_product, name="add_product"),
+    path("products/<int:product_id>/edit/", views.edit_product, name="edit_product"),
+    path("customers/", views.customers, name="customers"),
+    path("analytics/", views.analytics, name="retention_analytics"),
     path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
     path("favorites/toggle/<int:product_id>/", views.toggle_favorite, name="toggle_favorite"),
+    path("checkout/", views.checkout, name="checkout"),
 ]

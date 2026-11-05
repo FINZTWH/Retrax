@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrax | Reviews &amp; feedback</title>
+    <link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'shop_products' %}" class="brand" aria-label="Retrax shop">
+            <span class="brand-mark">R</span>
+            <span class="brand-copy">
+                <strong>Retrax</strong>
+                <small>SHOP WITH MEANING</small>
+            </span>
+        </a>
+
+        <div class="nav-section">WORKSPACE</div>
+        <nav class="navigation">
+            <a href="{% url 'overview' %}" class="nav-link"><span class="nav-icon">⌂</span>Overview</a>
+            <a href="{% url 'shop_products' %}" class="nav-link"><span class="nav-icon">▦</span>Shop products</a>
+            <a href="{% url 'my_orders' %}" class="nav-link"><span class="nav-icon">▤</span>My orders</a>
+            <a href="{% url 'loyalty_rewards' %}" class="nav-link"><span class="nav-icon">✧</span>Loyalty &amp; rewards</a>
+            <a href="{% url 'my_preferences' %}" class="nav-link"><span class="nav-icon">♡</span>My preferences</a>
+            <a href="{% url 'reviews_feedback' %}" class="nav-link active" aria-current="page"><span class="nav-icon">☆</span>Reviews &amp; feedback</a>
+        </nav>
+
+        <div class="nav-section management-label">MANAGEMENT</div>
+        <nav class="navigation">
+            <a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="nav-icon">▥</span>Admin dashboard</a>
+            <a href="{% url 'product_management' %}" class="nav-link"><span class="nav-icon">▧</span>Product management</a>
+            <a href="{% url 'customers' %}" class="nav-link"><span class="nav-icon">♙</span>Customers</a>
+            <a href="{% url 'retention_analytics' %}" class="nav-link"><span class="nav-icon">⌁</span>Retention analytics</a>
+        </nav>
+
+        <div class="help-card">
+            <h3>Need a little help?</h3>
+            <p>Explore your rewards and discover something you'll love.</p>
+            <a href="{% url 'loyalty_rewards' %}">View rewards &#8599;</a>
+        </div>
+
+        <div class="profile">
+            <div class="avatar">R/T</div>
+            <div><strong>Retrax Team</strong><span>Admin · Gold tier</span></div>
+        </div>
+    </aside>
+
+    <main class="main-area">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">☰</button>
+            <div class="breadcrumb"><span>Workspace</span><i>/</i><strong>Reviews &amp; feedback</strong></div>
+            <form class="global-search" method="get" action="{% url 'shop_products' %}">
+                <input type="search" name="q" placeholder="Search products, orders..." aria-label="Search products or orders">
+            </form>
+            <button class="icon-button" type="button" aria-label="Notifications">♧</button>
+            <div class="top-avatar">R/T</div>
+        </header>
+
+        <section class="page-content">
+            <div class="page-heading">
+                <p class="eyebrow">YOUR VOICE MATTERS</p>
+                <h1>Reviews &amp; feedback</h1>
+                <p class="subtitle">Help other shoppers make confident choices and help us improve.</p>
+            </div>
+
+            <div class="reviews-grid">
+                <section class="panel pending-panel">
+                    <div class="panel-heading">
+                        <h2>Products waiting for your review</h2>
+                        <p>Share your experience after delivery.</p>
+                    </div>
+                    <div class="waiting-list" id="waitingList">
+                        {% for product in review_products %}
+                        <article class="waiting-product" data-product="{{ product.name }}" data-product-id="{{ product.id }}" data-emoji="{{ product.emoji }}">
+                            <span class="product-icon">{{ product.emoji }}</span>
+                            <div class="product-details"><strong>{{ product.name }}</strong><span>Share your experience · Earn 10 points</span></div>
+                            <button class="review-button" type="button">Write review</button>
+                        </article>
+                        {% empty %}
+                        <p>No products are available for review yet.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <aside class="panel impact-panel">
+                    <div class="panel-heading">
+                        <h2>Your impact</h2>
+                        <p>Your feedback makes shopping better.</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top"><span>Reviews published</span><span class="stat-icon">☆</span></div>
+                        <strong id="reviewCount">{{ review_count }}</strong>
+                        <p><b>+2</b> this month</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top"><span>Points earned</span><span class="stat-icon">✧</span></div>
+                        <strong id="pointsCount">{{ loyalty_points }}</strong>
+                        <p><b>10 pts</b> per review</p>
+                    </div>
+                </aside>
+            </div>
+
+            <section class="panel recent-panel">
+                <div class="panel-heading">
+                    <h2>Your recent reviews</h2>
+                    <p>Feedback you've shared with the community.</p>
+                </div>
+                <div class="recent-list" id="recentList">
+                    {% for review in reviews %}
+                    <article class="recent-review">
+                        <span class="product-icon">{{ review.product.emoji }}</span>
+                        <div class="recent-details">
+                            <strong>{{ review.product.name }}</strong>
+                            <div><span class="stars">{% for n in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span><span class="review-copy">· "{{ review.comment }}"</span></div>
+                        </div>
+                        <span class="published">Published</span>
+                    </article>
+                    {% empty %}
+                    <p>No published reviews yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </section>
+    </main>
+</div>
+
+<button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Close navigation"></button>
+
+<dialog class="review-dialog" id="reviewDialog">
+    <form method="post" action="{% url 'reviews_feedback' %}" id="reviewForm">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="reviewProductId">
+        <input type="hidden" name="rating" id="reviewRating" value="5">
+        <div class="dialog-heading">
+            <div><p class="eyebrow">SHARE YOUR EXPERIENCE</p><h2 id="dialogProductName">Write a review</h2></div>
+            <button class="close-dialog" value="cancel" type="button" aria-label="Close review form" onclick="document.getElementById('reviewDialog').close()">×</button>
+        </div>
+        <fieldset class="rating-field">
+            <legend>Your rating</legend>
+            <div class="star-picker" id="starPicker" aria-label="Choose a rating">
+                <button type="button" data-rating="1" aria-label="1 star">★</button>
+                <button type="button" data-rating="2" aria-label="2 stars">★</button>
+                <button type="button" data-rating="3" aria-label="3 stars">★</button>
+                <button type="button" data-rating="4" aria-label="4 stars">★</button>
+                <button type="button" data-rating="5" aria-label="5 stars">★</button>
+            </div>
+        </fieldset>
+        <label for="reviewText">Your review</label>
+        <textarea id="reviewText" name="comment" rows="4" placeholder="What did you like about this product?" required></textarea>
+        <div class="dialog-actions">
+            <button class="cancel-button" value="cancel" type="button" onclick="document.getElementById('reviewDialog').close()">Cancel</button>
+            <button class="submit-button" id="submitReview" type="submit">Publish review</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+function setMenuOpen(open) {
+    sidebar.classList.toggle("sidebar-open", open);
+    sidebarOverlay.classList.toggle("is-visible", open);
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+}
+menuToggle.addEventListener("click", () => setMenuOpen(!sidebar.classList.contains("sidebar-open")));
+sidebarOverlay.addEventListener("click", () => setMenuOpen(false));
+document.addEventListener("keydown", event => { if (event.key === "Escape") setMenuOpen(false); });
+
+const dialog = document.getElementById("reviewDialog");
+const dialogProductName = document.getElementById("dialogProductName");
+const reviewText = document.getElementById("reviewText");
+const starButtons = [...document.querySelectorAll(".star-picker button")];
+let selectedRating = 5;
+let selectedProduct = null;
+let selectedProductId = null;
+let selectedEmoji = "";
+
+function paintStars() {
+    starButtons.forEach(button => {
+        button.classList.toggle("selected", Number(button.dataset.rating) <= selectedRating);
+    });
+}
+paintStars();
+starButtons.forEach(button => button.addEventListener("click", () => {
+    selectedRating = Number(button.dataset.rating);
+    paintStars();
+}));
+
+document.querySelectorAll(".review-button").forEach(button => {
+    button.addEventListener("click", () => {
+        const product = button.closest(".waiting-product");
+        selectedProduct = product.dataset.product;
+        selectedProductId = product.dataset.productId;
+        selectedEmoji = product.dataset.emoji;
+        dialogProductName.textContent = selectedProduct;
+        reviewText.value = "";
+        selectedRating = 5;
+        paintStars();
+        dialog.showModal();
+    });
+});
+
+document.getElementById("submitReview").addEventListener("click", event => {
+    const message = reviewText.value.trim();
+    if (!message) {
+        event.preventDefault();
+        reviewText.focus();
+        return;
+    }
+    document.getElementById("reviewProductId").value = selectedProductId;
+    document.getElementById("reviewRating").value = selectedRating;
+});
+</script>
+</body>
+</html>

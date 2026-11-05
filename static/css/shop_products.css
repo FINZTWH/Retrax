@@ -31,6 +31,11 @@ body {
     min-height: 100vh;
 }
 
+:focus-visible {
+    outline: 3px solid rgba(49, 92, 70, 0.25);
+    outline-offset: 3px;
+}
+
 /* ==========================================
    SIDEBAR
 ========================================== */
@@ -308,6 +313,31 @@ body {
 
 .header-avatar {
     background: var(--primary-light);
+}
+
+.header-actions .preferences-btn {
+    min-height: 39px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+}
+
+.header-actions form button.preferences-btn {
+    background: var(--white);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.add-cart-form button:disabled {
+    background: #dfe5e1;
+    color: #758178;
+    cursor: not-allowed;
+}
+
+.user-details a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
 }
 
 /* ==========================================
