@@ -2,10 +2,10 @@
 
 :root {
     --sidebar-width: 260px;
-    --primary: #176b55;
-    --primary-dark: #10513f;
-    --primary-light: #e8f4ef;
-    --background: #f7f9f8;
+    --primary: #315c46;
+    --primary-dark: #234633;
+    --primary-light: #eaf2ec;
+    --background: #f8faf8;
     --white: #fff;
     --text-dark: #202c28;
     --text-medium: #697771;
@@ -39,9 +39,9 @@ body {
     flex-direction: column;
     padding: 28px 20px 20px;
     overflow-y: auto;
-    background: var(--sidebar);
-    color: #dce7ea;
-    border-right: 1px solid var(--sidebar);
+    background: var(--white);
+    color: var(--text-dark);
+    border-right: 1px solid var(--border);
 }
 
 .brand {
@@ -60,19 +60,19 @@ body {
     display: grid;
     place-items: center;
     border-radius: 12px;
-    background: #fff;
-    color: var(--sidebar);
+    background: var(--primary);
+    color: #fff;
     font-size: 25px;
     font-weight: 800;
 }
 
 .brand-copy { display: flex; flex-direction: column; }
-.brand-copy strong { color: #fff; font-size: 23px; letter-spacing: -1px; line-height: 1; }
-.brand-copy small { margin-top: 6px; color: #8fb4c1; font-size: 8px; letter-spacing: 1.5px; font-weight: 700; }
+.brand-copy strong { color: var(--text-dark); font-size: 23px; letter-spacing: -1px; line-height: 1; }
+.brand-copy small { margin-top: 6px; color: var(--text-light); font-size: 8px; letter-spacing: 1.5px; font-weight: 700; }
 
 .nav-section {
     margin: 0 0 13px 10px;
-    color: #8fb4c1;
+    color: #a2aaa4;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.3px;
@@ -85,48 +85,54 @@ body {
     gap: 13px;
     padding: 12px 13px;
     border-radius: 9px;
-    color: #b9d0d8;
+    color: #69776e;
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
     transition: .2s ease;
     margin-bottom: 20px;
 }
-.nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
-.nav-link.active { background: rgba(74,197,190,.14); color: #6ddbd0; font-weight: 700; }
+.nav-link:hover { background: var(--primary-light); color: var(--primary); }
+.nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
 .nav-icon { width: 20px; text-align: center; font-size: 19px; }
 
 .help-card {
     margin-top: auto;
     margin-bottom: 23px;
     padding: 19px 16px;
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid #e1eee6;
     border-radius: 13px;
-    background: rgba(255,255,255,.08);
+    background: #f0f7f3;
 }
-.help-card h3 { margin-bottom: 8px; color: #fff; font-size: 13px; }
-.help-card p { margin-bottom: 13px; color: #b9d0d8; font-size: 11px; line-height: 1.7; }
+.help-card h3 { margin-bottom: 8px; color: var(--text-dark); font-size: 13px; }
+.help-card p { margin-bottom: 13px; color: var(--text-medium); font-size: 11px; line-height: 1.7; }
 .help-card a {
     display: inline-flex;
     padding: 11px 16px;
     border-radius: 8px;
-    background: #fff;
-    color: var(--sidebar);
+    background: var(--primary);
+    color: #fff;
     text-decoration: none;
     font-size: 12px;
     font-weight: 700;
 }
 
 .profile {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr);
     align-items: center;
     gap: 11px;
     padding: 20px 3px 0;
     border-top: 1px solid rgba(255,255,255,.12);
 }
-.profile div:last-child { display: flex; flex-direction: column; }
-.profile strong { color: #fff; font-size: 11px; }
-.profile span { margin-top: 3px; color: #9fb8c1; font-size: 10px; }
+.profile div:nth-child(2) { display: flex; flex-direction: column; min-width: 0; }
+.profile-signout, .profile-signin { grid-column: 1 / -1; }
+.profile-signout button, .profile-signin { width: 100%; min-height: 34px; border: 1px solid var(--border); border-radius: 8px; display: grid; place-items: center; background: var(--white); color: var(--primary); font-family: inherit; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.profile-signout button:hover, .profile-signin:hover { border-color: var(--primary); background: var(--primary-light); }
+.top-signout button { height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); color: var(--primary); font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.top-signout button:hover { border-color: var(--primary); background: var(--primary-light); }
+.profile strong { color: var(--text-dark); font-size: 11px; }
+.profile span { margin-top: 3px; color: var(--text-light); font-size: 10px; }
 .avatar, .top-avatar {
     display: grid;
     place-items: center;

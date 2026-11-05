@@ -1,6 +1,7 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from account.models import CartItem, Category, Order, Product
 
 
 class ShopPageTests(TestCase):
@@ -104,6 +105,37 @@ class ShopPageTests(TestCase):
         self.assertTemplateUsed(management_response, "product.html")
         self.assertTemplateNotUsed(management_response, "shop.html")
         self.assertContains(management_response, "Product management")
+
+    def test_checkout_requires_valid_payment_and_creates_paid_order(self):
+        user = User.objects.create_user("buyer", password="testpass123")
+        category = Category.objects.create(name="Demo", slug="demo")
+        product = Product.objects.create(category=category, name="Paid Product", price="25.00", points=50, stock=5)
+        CartItem.objects.create(user=user, product=product, quantity=2)
+        self.client.force_login(user)
+
+        invalid = self.client.post(reverse("checkout"), {
+            "card_name": "Test Buyer",
+            "card_number": "1234567890123456",
+            "expiry": "12/99",
+            "cvc": "123",
+        })
+        self.assertRedirects(invalid, reverse("my_orders"), fetch_redirect_response=False)
+        self.assertFalse(Order.objects.filter(user=user).exists())
+
+        response = self.client.post(reverse("checkout"), {
+            "card_name": "Test Buyer",
+            "card_number": "4242424242424242",
+            "expiry": "12/99",
+            "cvc": "123",
+        })
+        self.assertRedirects(response, reverse("my_orders"), fetch_redirect_response=False)
+        product.refresh_from_db()
+        order = Order.objects.get(user=user)
+        self.assertEqual(order.payment_status, "paid")
+        self.assertEqual(order.total, product.price * 2)
+        self.assertEqual(order.transaction_id[:4], "RTX-")
+        self.assertEqual(product.stock, 3)
+        self.assertFalse(CartItem.objects.filter(user=user).exists())
 
     def test_sign_in_rejects_external_next_redirect(self):
         user = User.objects.create_user("member", password="testpass123")

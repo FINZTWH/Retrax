@@ -88,12 +88,15 @@
 
         <!-- PROFILE -->
         <div class="profile">
-            <div class="avatar">R/T</div>
-
-            <!-- <div>
-                <strong>Emmanuel Adah</strong>
-                <span>Member · Green tier</span>
-            </div> -->
+            <div class="avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="profile-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="profile-signin">Sign in</a>
+            {% endif %}
         </div>
 
     </aside>
@@ -126,8 +129,13 @@
             </form>
 
             <button class="icon-button" type="button" aria-label="Notifications">♧</button>
-
-            <div class="top-avatar">R/T</div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="top-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% endif %}
+            <div class="top-avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
 
         </header>
 

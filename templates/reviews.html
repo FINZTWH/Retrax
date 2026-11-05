@@ -43,8 +43,16 @@
         </div>
 
         <div class="profile">
-            <div class="avatar">R/T</div>
-            <div><strong>Retrax Team</strong><span>Admin · Gold tier</span></div>
+            <div class="avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
+            <div><strong>{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Guest shopper{% endif %}</strong><span>{% if user.is_authenticated %}{% if user.is_staff %}Administrator{% else %}Retrax member{% endif %}{% else %}Guest account{% endif %}</span></div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="profile-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="profile-signin">Sign in</a>
+            {% endif %}
         </div>
     </aside>
 
@@ -56,7 +64,13 @@
                 <input type="search" name="q" placeholder="Search products, orders..." aria-label="Search products or orders">
             </form>
             <button class="icon-button" type="button" aria-label="Notifications">♧</button>
-            <div class="top-avatar">R/T</div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="top-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% endif %}
+            <div class="top-avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
         </header>
 
         <section class="page-content">

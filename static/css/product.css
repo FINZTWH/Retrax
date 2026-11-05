@@ -13,18 +13,18 @@
 }
 
 :root {
-    --primary: #176b55;
-    --primary-dark: #10513f;
-    --primary-light: #e8f4ef;
+    --primary: #315c46;
+    --primary-dark: #234633;
+    --primary-light: #eaf2ec;
 
-    --background: #f7f9f8;
+    --background: #f8faf8;
     --white: #ffffff;
 
-    --text-dark: #202c28;
-    --text-medium: #697771;
-    --text-light: #9ba7a1;
+    --text-dark: #24332a;
+    --text-medium: #69776e;
+    --text-light: #7b887f;
 
-    --border: #e9eeeb;
+    --border: #e8eee9;
 
     --green: #16845d;
     --green-bg: #e8f6ee;
@@ -206,12 +206,18 @@ body {
 
 /* PROFILE */
 .profile {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr);
     align-items: center;
     gap: 11px;
     border-top: 1px solid var(--border);
     padding: 20px 3px 0;
 }
+.profile-signout, .profile-signin { grid-column: 1 / -1; }
+.profile-signout button, .profile-signin { width: 100%; min-height: 34px; border: 1px solid var(--border); border-radius: 8px; display: grid; place-items: center; background: var(--white); color: var(--primary); font-family: inherit; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.profile-signout button:hover, .profile-signin:hover { border-color: var(--primary); background: var(--primary-light); }
+.top-signout button { height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); color: var(--primary); font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.top-signout button:hover { border-color: var(--primary); background: var(--primary-light); }
 
 .avatar,
 .top-avatar {

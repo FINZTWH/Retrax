@@ -39,8 +39,16 @@
             <a href="{% url 'loyalty_rewards' %}">View rewards ↗</a>
         </div>
         <div class="profile">
-            <div class="avatar">EA</div>
-            <div><strong>Emmanuel Adah</strong><span>Member · Green tier</span></div>
+            <div class="avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
+            <div><strong>{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Guest shopper{% endif %}</strong><span>{% if user.is_authenticated %}{% if user.is_staff %}Administrator{% else %}Retrax member{% endif %}{% else %}Guest account{% endif %}</span></div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="profile-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="profile-signin">Sign in</a>
+            {% endif %}
         </div>
     </aside>
 
@@ -52,7 +60,13 @@
                 <input type="search" name="q" placeholder="Search products, orders..." aria-label="Search Retrax">
             </form>
             <a href="{% url 'loyalty_rewards' %}" class="icon-button" aria-label="View rewards">♧</a>
-            <div class="top-avatar">EA</div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="top-signout">
+                {% csrf_token %}
+                <button type="submit">Sign out</button>
+            </form>
+            {% endif %}
+            <div class="top-avatar">{% if user.is_authenticated %}{{ user.first_name.0|default:user.username.0|upper }}{% else %}R/T{% endif %}</div>
         </header>
 
         <section class="page-content">
@@ -98,14 +112,26 @@
                     <a href="{{ section.url }}" class="section-link">{{ section.label }} <span>→</span></a>
                     {% endif %}
                     {% if section.checkout_url %}
-                    <form method="post" action="{{ section.checkout_url }}" style="margin-top:12px">
-                        {% csrf_token %}
-                        <button type="submit" class="section-link" style="border:0;cursor:pointer;width:100%">Place order</button>
-                    </form>
+                    <a href="#checkout-payment" class="section-link" style="width:100%">Proceed to payment</a>
                     {% endif %}
                 </article>
                 {% endfor %}
             </div>
+            {% if payment_form %}
+            <article class="section-card payment-panel" id="checkout-payment" style="max-width:780px;margin-top:24px">
+                <div class="section-heading">
+                    <div>
+                        <h2>Secure card payment</h2>
+                        <p>Demo gateway enabled. Use card 4242 4242 4242 4242 with any future expiry and 3-digit CVC.</p>
+                    </div>
+                </div>
+                <form method="post" action="{{ form_action }}" class="payment-form">
+                    {% csrf_token %}
+                    {{ payment_form.as_p }}
+                    <button type="submit" class="payment-submit">Pay ${{ cart_total|floatformat:2 }}</button>
+                </form>
+            </article>
+            {% endif %}
             {% if form %}
             <article class="section-card" style="max-width:780px;margin-top:24px">
                 <form method="post" action="{{ form_action|default:request.path }}" style="display:grid;gap:14px">

@@ -377,7 +377,7 @@
                             >
 
                                 {% csrf_token %}
-                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="next" value="{% url 'my_orders' %}">
 
                                 <button type="submit"{% if product.stock == 0 %} disabled{% endif %}>
                                     {% if product.stock == 0 %}Out of stock{% else %}Add to cart{% endif %}

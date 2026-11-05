@@ -6,8 +6,9 @@ from django.shortcuts import redirect, render
 from django.db import transaction
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from account.forms import PreferenceForm, ProductForm, ReviewForm
+from account.forms import PaymentForm, PreferenceForm, ProductForm, ReviewForm
 from account.models import CartItem, Category, Favorite, LoyaltyProfile, Order, OrderItem, Preference, Product, Review
+import uuid
 
 
 CATEGORIES = [
@@ -260,15 +261,20 @@ def orders(request):
                 "label": "View shop",
                 "url": "/shop/",
             })
-    return workspace_page(
-        request, "orders", "My orders", "ORDER HISTORY",
-        "Review purchases and keep track of your current cart.",
-        sections=sections,
-        stats=[
+    return render(request, "workspace.html", {
+        "page_key": "orders",
+        "page_title": "My orders",
+        "page_eyebrow": "ORDER HISTORY",
+        "page_description": "Review purchases and keep track of your current cart.",
+        "sections": sections,
+        "stats": [
             {"value": str(len(order_items)), "label": "Cart products", "trend": "Current session"},
             {"value": str(sum(item["quantity"] for item in order_items)), "label": "Total units", "trend": "Ready to review"},
         ],
-    )
+        "payment_form": PaymentForm() if order_items else None,
+        "form_action": "/checkout/",
+        "cart_total": sum(float(item["total"]) for item in order_items),
+    })
 
 
 def rewards(request):
@@ -467,6 +473,12 @@ def reviews_feedback(request):
 def checkout(request):
     if request.method != "POST":
         return redirect("my_orders")
+    payment_form = PaymentForm(request.POST)
+    if not payment_form.is_valid():
+        for field, errors in payment_form.errors.items():
+            for error in errors:
+                messages.error(request, error)
+        return redirect("my_orders")
     cart_items = list(CartItem.objects.filter(user=request.user).select_related("product"))
     if not cart_items:
         messages.error(request, "Your cart is empty.")
@@ -483,7 +495,14 @@ def checkout(request):
             locked_items.append((product, item.quantity))
             total += product.price * item.quantity
             points += product.points * item.quantity
-        order = Order.objects.create(user=request.user, total=total)
+        transaction_id = f"RTX-{uuid.uuid4().hex[:12].upper()}"
+        order = Order.objects.create(
+            user=request.user,
+            total=total,
+            payment_status="paid",
+            payment_method="Card",
+            transaction_id=transaction_id,
+        )
         for product, quantity in locked_items:
             OrderItem.objects.create(order=order, product=product, quantity=quantity, unit_price=product.price)
             product.stock -= quantity
